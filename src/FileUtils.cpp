@@ -165,6 +165,7 @@ void WriteFile::flush() {
 
 void WriteFile::append(const char *context, const uint64_t len) {
 	size_t writecount =  fwrite(context, 1, len, fp_);
+	std::cout << "writecount" << writecount <<std::endl;
 	size_t remain = len - writecount;
 	while (remain > 0) {
 		size_t writenum = fwrite(context + writecount, 1, remain, fp_);

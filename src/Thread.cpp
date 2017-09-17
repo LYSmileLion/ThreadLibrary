@@ -96,6 +96,7 @@ void Thread::start() {
         std::cout << "Thread already runnnig " << std::endl;
         return ;
     }
+	started_ = true;
     ThreadInfo *threadinfo = new ThreadInfo(func_, name_, tid_);
 	if (pthread_create(&pthreadId_, NULL, &startThread, threadinfo)) {
 		started_ = false;

@@ -1,5 +1,5 @@
 #ifndef INCLUDE_CURRENTTHREAD_HPP_
-#define INCLUDE_CURRENTTHREAD_HPP
+#define INCLUDE_CURRENTTHREAD_HPP_
 
 #include <stdint.h>
 
@@ -7,7 +7,7 @@ namespace HPCs {
 
 namespace CurrentThread {
 
-  extern __thread int t_cache_tid;
+  extern __thread int t_cached_tid;
   extern __thread char t_tid_string[32];
   extern __thread int t_tid_string_length;
   extern __thread const char* t_thread_name;
@@ -15,10 +15,10 @@ namespace CurrentThread {
   void cacheTid();
 
   inline int getTid() {
-    if (t_cache_tid == 0) {
+    if (t_cached_tid == 0) {
       cacheTid();
     }
-    return t_cache_tid;
+    return t_cached_tid;
   }
 
   inline const char* getTidString() {

@@ -1,5 +1,5 @@
-#ifndef INCLUDE_CURRENTTHREAD_HPP_
-#define INCLUDE_CURRENTTHREAD_HPP_
+#ifndef INCLUDE_UTILS_HPP_
+#define INCLUDE_UTILS_HPP_
 
 #include <assert.h>
 
