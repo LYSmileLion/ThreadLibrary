@@ -71,8 +71,10 @@ set(TOP_API_INCLUDE ${PROJECT_SOURCE_DIR}/include)
 
 include_directories(${TOP_API_INCLUDE})
 
-#set(THREAD_SRC ${PROJECT_SOURCE_DIR}/src/Thread.cpp)
+set(THREAD_SRC ${PROJECT_SOURCE_DIR}/src/Thread.cpp)
 set(THREAD_SRC ${THREAD_SRC} ${PROJECT_SOURCE_DIR}/src/FileUtils.cpp)
+set(THREAD_SRC ${THREAD_SRC} ${PROJECT_SOURCE_DIR}/src/MutexLock.cpp)
+#set(THREAD_SRC ${THREAD_SRC} ${PROJECT_SOURCE_DIR}/src/ThreadPool.cpp)
 
 if(TARGET_OS STREQUAL "Linux")
     set(DEPS_LIBS
@@ -86,7 +88,13 @@ add_library(${TARGET_OS}_${TARGET_ARCH}_Thread SHARED ${THREAD_SRC})
 message(STATUS "lib_name: ${TARGET_OS}_${TARGET_ARCH}_Thread")
 
 if(BUILD_SAMPLES)
-    add_executable(thread_test ${PROJECT_SOURCE_DIR}/sample/FileTest.cpp)
+	add_executable(file_utils_est ${PROJECT_SOURCE_DIR}/sample/FileTest.cpp)
+	target_link_libraries(file_utils_est ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
+    add_executable(thread_test ${PROJECT_SOURCE_DIR}/sample/ThreadTest.cpp)
 	target_link_libraries(thread_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
+	add_executable(mutex_test ${PROJECT_SOURCE_DIR}/sample/MutexTest.cpp)
+	target_link_libraries(mutex_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
+	#   add_executable(thread_pool_test ${PROJECT_SOURCE_DIR}/sample/ThreadPoolTest.cpp)
+	#target_link_libraries(thread_pool_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
 endif()
 

@@ -1,10 +1,10 @@
-#ifdef  _INCLUDE_MUTEXLOCK_HPP_
+#ifndef _INCLUDE_MUTEXLOCK_HPP_
 #define _INCLUDE_MUTEXLOCK_HPP_
 #include <nocopyable.hpp>
 #include <pthread.h>
 
 namespace HPCs {//high performance 
-class MutexLock : nocopyable {
+class MutexLock : public nocopyable {
  public:
     MutexLock();
 
@@ -16,7 +16,8 @@ class MutexLock : nocopyable {
 
     void unlock();
 
-    pthread_mutex_t* getPthreadMutex() /* non-const */
+    pthread_mutex_t* getPthreadMutex(); /* non-const */
+
  private:
 	friend class Condition;
 
@@ -39,19 +40,16 @@ class MutexLock : nocopyable {
     pid_t holder_pid_;
 
     pthread_mutex_t mutex_;
-}
+};
 
-class MutexLockGuard : boost::noncopyable
-{
+class MutexLockGuard : public nocopyable {
  public:
   explicit MutexLockGuard(MutexLock& mutex)
-    : mutex_(mutex)
-  {
+    : mutex_(mutex) {
     mutex_.lock();
   }
 
-  ~MutexLockGuard()
-  {
+  ~MutexLockGuard() {
     mutex_.unlock();
   }
 

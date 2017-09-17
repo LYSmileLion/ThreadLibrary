@@ -1,9 +1,12 @@
 #include <MutexLock.hpp>
+#include <utils.hpp>
+#include <Thread.hpp>
+#include <CurrentThread.hpp>
 
 using namespace HPCs;
 
 MutexLock::MutexLock() : holder_pid_(0) {
-    CHECKERROR(pthread_mutex_init(&mutex_, NULL));
+   CHECKERROR(pthread_mutex_init(&mutex_, NULL));
 }
 
 MutexLock::~MutexLock() {
@@ -11,16 +14,16 @@ MutexLock::~MutexLock() {
 }
 
 bool MutexLock::isLockedByThisThread() const {
-    return holder_pid_ == HPCs::CurrentThread::GetTid();
+    return holder_pid_ == CurrentThread::getTid();
 }
 
 void MutexLock::lock() {
     CHECKERROR(pthread_mutex_lock(&mutex_));
-    assignHolder();
+    assignHolderPid();
 }
 
 void MutexLock::unlock() {
-    unassignHolder();
+    resetHolderPid();
     CHECKERROR(pthread_mutex_unlock(&mutex_));
 }
 
@@ -32,6 +35,7 @@ void MutexLock::resetHolderPid() {
     holder_pid_ = 0;
 }
 
-void MutexLock::getHolderPid() {
-    holder_pid_ = HPCs::CurrentThread::GetTid();
+void MutexLock::assignHolderPid() {
+    holder_pid_ = CurrentThread::getTid();
+	
 }

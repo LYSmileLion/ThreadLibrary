@@ -1,17 +1,18 @@
-#ifdef  _INCLUDE_THREADPOOL_HPP_
+#ifndef  _INCLUDE_THREADPOOL_HPP_
 #define _INCLUDE_THREADPOOL_HPP_
 
 #include <functional>
-#include <noncopyable>
+#include <nocopyable.hpp>
 
 namespace HPCs {//high performance 
+
 class ThreadPool {
  public:
     typedef std::function<void ()> Task;
 
     explicit ThreadPool(const std::string name = std::string("ThreadPool"));
 
-    void setTaskQueueSize(const max_size);
+    void setTaskQueueSize(const int max_size);
 
     void setThreadInitCallBack(const Task& task);
 
