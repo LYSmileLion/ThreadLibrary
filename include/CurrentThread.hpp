@@ -12,30 +12,30 @@ namespace CurrentThread {
   extern __thread int t_tid_string_length;
   extern __thread const char* t_thread_name;
 
-  void CacheTid();
+  void cacheTid();
 
-  inline int GetTid() {
-    if (t_cachedTid == 0) {
-      CacheTid();
+  inline int getTid() {
+    if (t_cache_tid == 0) {
+      cacheTid();
     }
-    return t_cached_tid;
+    return t_cache_tid;
   }
 
-  inline const char* GetTidString() {
+  inline const char* getTidString() {
     return t_tid_string;
   }
 
-  inline int GetTidStringLength() {
+  inline int getTidStringLength() {
     return t_tid_string_length;
   }
 
-  inline const char* GetName() {
+  inline const char* getName() {
     return t_thread_name;
   }
 
-  bool IsMainThread();
+  bool isMainThread();
 
-  void SleepUsec(int64_t usec);
+  void sleepUsec(int64_t usec);
 }
 }
 

@@ -18,6 +18,20 @@ class MutexLock : nocopyable {
 
     pthread_mutex_t* getPthreadMutex() /* non-const */
  private:
+	friend class Condition;
+
+	class ResetHolderPid : nocopyable {
+	 public:
+		ResetHolderPid(MutexLock &owner) : owner_(owner) {
+			owner_.resetHolderPid();
+		}
+
+		~ResetHolderPid() {
+			owner_.assignHolderPid();
+		}
+	 private:
+		MutexLock &owner_;
+	};
     void resetHolderPid();
 
     void assignHolderPid();

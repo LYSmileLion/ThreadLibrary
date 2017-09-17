@@ -1,5 +1,13 @@
+#include <sys/syscall.h>
+#include <unistd.h>
+#include <sys/prctl.h>
+#include <assert.h>
+
 #include <iostream>
+
 #include <Thread.hpp>
+#include <CurrentThread.hpp>
+
 namespace HPCs {
 
 namespace CurrentThread {
@@ -8,19 +16,19 @@ __thread char t_tid_string[32];
 __thread int t_tid_string_length = 6;
 __thread const char *t_thread_name = "unknow";
 
-void CacheTid() {
+void cacheTid() {
     if (t_cached_tid == 0) {
-        t_cached_tid = static_cast<pid_t>(::syscall(SYS_gettid));
+        t_cached_tid = static_cast<pid_t>(syscall(SYS_gettid));
         t_tid_string_length = 
-            snprintf(t_tid_string, sizeof(t_tid_string), "%5d ", t_cached_tid) 
+            snprintf(t_tid_string, sizeof(t_tid_string), "%5d ", t_cached_tid);
     }
 }
 
-bool IsMainThread() {
-    return (GetTid() == getpid());
+bool isMainThread() {
+    return (getTid() == getpid());
 }
 
-void SleepUsec(int64_t usec) {
+void sleepUsec(int64_t usec) {
     struct timespec ts = {0, 0};
     ts.tv_sec = static_cast<time_t> (usec / (1000 * 1000));
     ts.tv_nsec = static_cast<long> (usec % (1000 * 1000));
@@ -28,7 +36,7 @@ void SleepUsec(int64_t usec) {
 }
 }
 
-class ThreadInfo {
+struct ThreadInfo {
     typedef Thread::ThreadFunc ThreadFunc;
     ThreadFunc func_;
     std::string name_;
@@ -42,18 +50,18 @@ class ThreadInfo {
         wptid_(ptr_tid) {}
     
     void runThread() {
-        pid_t tid = tid();
+        pid_t tid = CurrentThread::getTid();
 
         std::shared_ptr<pid_t> sptid = wptid_.lock();
         if (sptid) {
             *sptid = tid;
             sptid.reset();//better to reset this shared ptr
         }
-        t_thread_name = name_.empty() ? "HPCs Thread" : name_.c_str();
-        prctl(PR_SET_NAME, t_thread_name);//this API now support Thread,it
+		CurrentThread::t_thread_name = name_.empty() ? "HPCs Thread" : name_.c_str();
+        prctl(PR_SET_NAME, CurrentThread::t_thread_name);//this API now support Thread,it
         //will set thread name for now
         func_();
-        t_thread_name = "Thread : finish the task";
+		CurrentThread::t_thread_name = "Thread : finish the task";
     }
 
 
@@ -77,13 +85,13 @@ Thread::~Thread() {
     }
 }
 
-void Thread::SetDefaultName() {
+void Thread::setDefaultName() {
     if (name_.empty()) {
         name_ = std::string("HPCs Thread");
     }
 }
 
-void Thread::Start() {
+void Thread::start() {
     if (started_) {
         std::cout << "Thread already runnnig " << std::endl;
         return ;
@@ -98,6 +106,6 @@ int Thread::join() {
 	assert(started_);
 	assert(!joined_);
 	joined_ = true;
-	return pthread_join();
+	return pthread_join(pthreadId_, NULL);
 }
-
+}
