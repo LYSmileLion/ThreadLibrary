@@ -1,35 +1,37 @@
-#ifdef  _INCLUDE_THREAD_HPP_
+#ifndef _INCLUDE_THREAD_HPP_
 #define _INCLUDE_THREAD_HPP_
+
+#include <pthread.h>
 
 #include <functional>
 #include <memory>
 #include <string>
+
 #include <nocopyable.hpp>
-#include <pthread.h>
+
 
 namespace HPCs {//high performance 
 
-class Thread : noncopyable
-{
+class Thread : public nocopyable {
  public:
   typedef std::function<void ()> ThreadFunc;
 
-  explicit Thread(const ThreadFunc&, const string& name = string());
+  explicit Thread(const ThreadFunc&, const std::string& name = std::string());
 
   ~Thread();
 
   void start();
 
-  int Join();
+  int join();
 
-  bool IsStarted() const;
+  bool isStarted() const;
 
-  pid_t Tid() const;
+  pid_t tid() const;
 
-  const string& Name() const;
+  const std::string& name() const;
 
  private:
-  void SetDefaultName();
+  void setDefaultName();
 
   bool started_;
 
@@ -41,7 +43,7 @@ class Thread : noncopyable
 
   ThreadFunc func_;
 
-  string name_;
+  std::string name_;
 };
 
 }

@@ -1,17 +1,17 @@
-#ifdef  _INCLUDE_NOCOPYABLE_HPP_
+#ifndef  _INCLUDE_NOCOPYABLE_HPP_
 #define _INCLUDE_NOCOPYABLE_HPP_
 
 namespace HPCs{
 
-class noncopyable {
+class nocopyable {
  protected:
-    noncopyable () {}
+    nocopyable () {}
 
-    ~noncopyable () {}
+    ~nocopyable () {}
  private:
-    noncopyable (const noncopyable&);
+    nocopyable (const nocopyable&);
 
-    noncopyable& operator=(const noncopyable&);
+    nocopyable& operator=(const nocopyable&);
 };
 
 }
