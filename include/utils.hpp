@@ -2,6 +2,7 @@
 #define INCLUDE_UTILS_HPP_
 
 #include <assert.h>
+#include <stdint.h>
 
 #ifdef NDEBUG
 __BEGIN_DECLS
@@ -24,5 +25,9 @@ __END_DECLS
                        assert(errornum == 0); (void) errornum;})
 #endif
 
+template <typename T>
+int convert(char buf[], T value);
+
+int convertHex(char buf[], uintptr_t value);
 
 #endif
