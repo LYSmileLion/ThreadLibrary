@@ -4,12 +4,12 @@
 
 using namespace HPCs;
 
-ThreadPool::ThreadPool(const std::string& threadpool_name) : 
+ThreadPool::ThreadPool(const std::string threadpool_name) : 
     mutex_(),
     notEmpty_(mutex_),
     notFull_(mutex_),
     name_(threadpool_name),
-    max_queue_size(0),
+    max_queue_size_(0),
     running_(false){}
 
 ThreadPool::~ThreadPool() {
@@ -29,7 +29,7 @@ void ThreadPool::start(int num_threads) {
     for (int i = 0; i < num_threads; i++) {
 		char id[32];
 		snprintf(id, sizeof(id), "%d", i + 1);
-		threads_.push_back(new Thread(std::bind(&ThreadPool::runInThread, this)), name_ + id);
+		threads_.push_back(std::shared_ptr<Thread>(new Thread(std::bind(&ThreadPool::runInThread, this), name_ + id)));
 		threads_[i]->start();
     }
 	if (num_threads == 0 && threadInitCallback_) {
@@ -43,7 +43,7 @@ void ThreadPool::stop() {
 		running_ == false;
 		notEmpty_.notifyAll();
 	}
-	for_each(threads_.begin(), threads_.end(), std::bind(&Thread::join, _1));
+	for_each(threads_.begin(), threads_.end(), std::bind(&Thread::join, std::placeholders::_1));
 }
 
 void ThreadPool::runInThread() {
@@ -60,7 +60,7 @@ void ThreadPool::runInThread() {
 
 ThreadPool::Task ThreadPool::take() {
 	MutexLockGuard lock(mutex_);
-	while (queue_.empty && running_) {
+	while (queue_.empty() && running_) {
 		notEmpty_.wait();
 	}
 
@@ -68,7 +68,7 @@ ThreadPool::Task ThreadPool::take() {
 	if (!queue_.empty()) {
 		task = queue_.front();
 		queue_.pop_front();
-		if (max_queue_size > 0) {
+		if (max_queue_size_ > 0) {
 			notFull_.notify();
 		}
 	}
@@ -76,7 +76,7 @@ ThreadPool::Task ThreadPool::take() {
 	return task;
 }
 
-void ThreadPool::run(const Task &task) {
+void ThreadPool::runTask(const Task &task) {
 	if (threads_.empty()) {
 		task();
 	} else {
@@ -90,5 +90,5 @@ void ThreadPool::run(const Task &task) {
 }
 
 bool ThreadPool::isFull() const {
-	
+	return max_queue_size_ > 0 && queue_.size() >= max_queue_size_;
 }

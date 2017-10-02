@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <stdint.h>
 
+#ifdef DISPLAY_SYSTEM_ERROR
+
 #ifdef NDEBUG
 __BEGIN_DECLS
 extern void __assert_perror_fail(
@@ -15,7 +17,6 @@ __THROW __attribute__ ((__noreturn__));
 __END_DECLS
 #endif
 
-#ifdef DISPLAY_SYSTEM_ERROR
 #define CHECKERROR(ret) ({ __typeof__ (ret) errornum = (ret);         \
                        if (__builtin_expect(errornum != 0, 0))    \
                          __assert_perror_fail (errornum, __FILE__, __LINE__, __func__);})

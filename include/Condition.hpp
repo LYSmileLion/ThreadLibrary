@@ -2,12 +2,12 @@
 #define INCLUDE_CONDITION_HPP_
 
 #include <MutexLock.hpp>
-#include <noncopyable.hpp>
+#include <nocopyable.hpp>
 #include <pthread.h>
 
 namespace HPCs{
 
-class Condition : noncopyable {
+class Condition : public nocopyable {
  public:
     explicit Condition(MutexLock& mutex);
 

@@ -3,6 +3,13 @@
 
 #include <functional>
 #include <nocopyable.hpp>
+#include <Thread.hpp>
+#include <string>
+#include <MutexLock.hpp>
+#include <Condition.hpp>
+#include <vector>
+#include <queue>
+#include <algorithm>
 
 namespace HPCs {//high performance 
 
@@ -12,6 +19,8 @@ class ThreadPool {
 
     explicit ThreadPool(const std::string name = std::string("ThreadPool"));
 
+	~ThreadPool();
+
     void setTaskQueueSize(const int max_size);
 
     void setThreadInitCallBack(const Task& task);
@@ -20,18 +29,21 @@ class ThreadPool {
 
     void stop();
 
-    const string name() const;
+    const std::string name() const;
 
     int taskQueueSize() const;
 
     void runTask(const Task& task);
 
+
  private:
-    bool isFull();
+    bool isFull() const;
 
     bool isTaskQueueFull() const;
 
     void runInThread();
+	
+	Task take(); 
 
     mutable MutexLock mutex_;
 
@@ -47,7 +59,9 @@ class ThreadPool {
 
     bool running_;
 
-    int max_queue_size;
+    int max_queue_size_;
+
+	std::string name_;
  };
 }
 #endif
