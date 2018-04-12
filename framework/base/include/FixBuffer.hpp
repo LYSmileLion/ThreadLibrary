@@ -6,7 +6,7 @@
 #include <string>
 #include <nocopyable.hpp>
 
-namespace HPCs {
+namespace Base {
 
 const int kSmallBuffer = 4000;
 const int kLargeBuffer = 4000*1000;

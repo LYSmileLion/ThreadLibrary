@@ -1,6 +1,6 @@
 #include <FixBuffer.hpp>
 
-using namespace HPCs;
+using namespace Base;
 
 template<int SIZE>
 void FixedBuffer<SIZE>::cookieStart() {}

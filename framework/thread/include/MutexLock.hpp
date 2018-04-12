@@ -1,10 +1,12 @@
 #ifndef _INCLUDE_MUTEXLOCK_HPP_
 #define _INCLUDE_MUTEXLOCK_HPP_
+
 #include <nocopyable.hpp>
 #include <pthread.h>
 
-namespace HPCs {//high performance 
-class MutexLock : public nocopyable {
+namespace Threads {//high performance 
+
+class MutexLock : public Base::nocopyable {
  public:
     MutexLock();
 
@@ -42,7 +44,7 @@ class MutexLock : public nocopyable {
     pthread_mutex_t mutex_;
 };
 
-class MutexLockGuard : public nocopyable {
+class MutexLockGuard : public Base::nocopyable {
  public:
   explicit MutexLockGuard(MutexLock& mutex)
     : mutex_(mutex) {

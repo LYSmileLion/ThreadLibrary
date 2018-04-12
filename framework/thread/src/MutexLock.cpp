@@ -3,7 +3,7 @@
 #include <Thread.hpp>
 #include <CurrentThread.hpp>
 
-using namespace HPCs;
+namespace Threads {
 
 MutexLock::MutexLock() : holder_pid_(0) {
    CHECKERROR(pthread_mutex_init(&mutex_, NULL));
@@ -37,5 +37,6 @@ void MutexLock::resetHolderPid() {
 
 void MutexLock::assignHolderPid() {
     holder_pid_ = CurrentThread::getTid();
-	
+}
+
 }

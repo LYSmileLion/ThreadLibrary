@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-namespace HPCs {
+namespace Threads {
 
 namespace CurrentThread {
 

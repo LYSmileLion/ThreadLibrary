@@ -2,13 +2,14 @@
 #define _INCLUDE_FILEUTILS_HPP_
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include <string>
 
 #include <nocopyable.hpp>
-#include <HPCsTypes.hpp>
+#include <Types.hpp>
 
-namespace HPCs {
+namespace Base {
 
 class ReadFile : public nocopyable {
  public:
@@ -16,19 +17,23 @@ class ReadFile : public nocopyable {
 
 	~ReadFile();
 
-	HPCsStatus readToString(
+	Status readToString(
 		uint64_t readsize,
 		int64_t *modifytime,
 		int64_t *createtime,
 		std::string *context);
 
-	HPCsStatus readToByte(
+	Status readToByte(
 		char *buffer, 
 		uint64_t buffersize,
 		int64_t *modifytime,
 		int64_t *createtime);
 
-	HPCsStatus getFileSize(uint64_t *filesize);
+	Status getFileSize(uint64_t *filesize);
+
+    int getSystemErrno() {
+        return errno_;
+    }
 
 	const char *buffer();
  private:
@@ -41,14 +46,15 @@ class WriteFile : public nocopyable {
 	explicit WriteFile(const std::string &file_name);
 
 	~WriteFile();
+	
+    Status fflush();
 
-	void append(const char* context, const uint64_t len);
+	Status append(const char* context, const uint64_t len);
 
 	int getSystemError() const;
 
 	uint64_t getWritenBytes() const;
 	 
-	void flush();
 
  private:
 	int errno_;

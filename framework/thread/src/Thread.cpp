@@ -8,7 +8,7 @@
 #include <Thread.hpp>
 #include <CurrentThread.hpp>
 
-namespace HPCs {
+namespace Threads {
 
 namespace CurrentThread {
 __thread int t_cached_tid = 0;
@@ -57,14 +57,11 @@ struct ThreadInfo {
             *sptid = tid;
             sptid.reset();//better to reset this shared ptr
         }
-		CurrentThread::t_thread_name = name_.empty() ? "HPCs Thread" : name_.c_str();
-        prctl(PR_SET_NAME, CurrentThread::t_thread_name);//this API now support Thread,it
-        //will set thread name for now
+		CurrentThread::t_thread_name = name_.empty() ? "Smile Thread" : name_.c_str();
+        prctl(PR_SET_NAME, CurrentThread::t_thread_name);//this API now support Thread,it will set thread name for now
         func_();
 		CurrentThread::t_thread_name = "Thread : finish the task";
     }
-
-
 };
 
 void *startThread(void *obj) {

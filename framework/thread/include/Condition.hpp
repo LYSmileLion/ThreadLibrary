@@ -5,9 +5,9 @@
 #include <nocopyable.hpp>
 #include <pthread.h>
 
-namespace HPCs{
+namespace Threads{
 
-class Condition : public nocopyable {
+class Condition : public Base::nocopyable {
  public:
     explicit Condition(MutexLock& mutex);
 

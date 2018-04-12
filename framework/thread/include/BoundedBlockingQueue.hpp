@@ -3,12 +3,13 @@
 
 #include <Condition.hpp>
 #include <utils.hpp>
+#include <nocopyable.hpp>
 #include <queue>
 
-namespace HPCs {
+namespace Threads {
 
 template<typename T>
-class BoundedBlockingQueue : boost::noncopyable
+class BoundedBlockingQueue : Base::noncopyable
 {
  public:
 	explicit BoundedBlockingQueue(int maxSize) : 
