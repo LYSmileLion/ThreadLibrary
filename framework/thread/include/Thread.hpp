@@ -1,6 +1,5 @@
 #ifndef _INCLUDE_THREAD_HPP_
 #define _INCLUDE_THREAD_HPP_
-
 #include <pthread.h>
 
 #include <functional>
@@ -9,10 +8,9 @@
 
 #include <nocopyable.hpp>
 
+namespace Threads {//high performance 
 
-namespace HPCs {//high performance 
-
-class Thread : public nocopyable {
+class Thread : public Base::nocopyable {
  public:
   typedef std::function<void ()> ThreadFunc;
 

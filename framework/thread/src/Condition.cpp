@@ -3,7 +3,7 @@
 #include <utils.hpp>
 #include <errno.h>
 
-using namespace HPCs;
+namespace Threads {
 
 Condition::Condition(MutexLock &mutex) : mutex_(mutex) {
     CHECKERROR(pthread_cond_init(&condition_, NULL));
@@ -39,4 +39,5 @@ void Condition::notify() {
 
 void Condition::notifyAll() {
 	CHECKERROR(pthread_cond_broadcast(&condition_));
+}
 }

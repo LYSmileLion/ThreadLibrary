@@ -1,10 +1,10 @@
 #ifndef INCLUDE_BLOCKINGQUEUE_HPP_
 #define INCLUDE_BLOCKINGQUEUE_HPP_
 
-namespace HPCs {
+namespace Threads {
 
 template<typename T>
-class BlockingQueue : public noncopyable {
+class BlockingQueue : public Bass::noncopyable {
  public:
 	BlockingQueue() : mutex_(),  notEmpty_(mutex_), queue_() {}
 

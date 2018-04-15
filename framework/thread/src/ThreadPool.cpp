@@ -2,7 +2,7 @@
 #include <MutexLock.hpp>
 #include <iostream>
 
-using namespace HPCs;
+namespace Threads {
 
 ThreadPool::ThreadPool(const std::string threadpool_name) : 
     mutex_(),
@@ -91,4 +91,5 @@ void ThreadPool::runTask(const Task &task) {
 
 bool ThreadPool::isFull() const {
 	return max_queue_size_ > 0 && queue_.size() >= max_queue_size_;
+}
 }

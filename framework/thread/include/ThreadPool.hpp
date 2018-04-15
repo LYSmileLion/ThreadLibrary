@@ -1,4 +1,4 @@
-#ifndef  _INCLUDE_THREADPOOL_HPP_
+#ifndef _INCLUDE_THREADPOOL_HPP_
 #define _INCLUDE_THREADPOOL_HPP_
 
 #include <functional>
@@ -11,7 +11,7 @@
 #include <queue>
 #include <algorithm>
 
-namespace HPCs {//high performance 
+namespace Threads {
 
 class ThreadPool {
  public:
