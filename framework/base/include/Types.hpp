@@ -15,6 +15,9 @@ typedef enum {
     FILE_APPEND_FAILED = -16,
 
     SOCKET_ADDRESS_CONVERT_FAILED = -17,
+    SOCKET_CREATE_FAILED = -18,
+    SOCKET_BIND_FAILED = -19,
+    SOCK_LISTEN_FAILED = -20,
 
 } Status;
 

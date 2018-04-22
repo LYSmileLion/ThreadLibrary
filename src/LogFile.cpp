@@ -8,9 +8,7 @@
 
 #include <LogFile.hpp>
 
-#define MAX_CHAR_BUFFER 100
-
-namespace Log {
+using namespace HPCs;
 
 LogFile::LogFile(const std::string& basename, uint64_t rollSize, bool threadSafe, int flushInterval, int checkEveryN)
     : basename_(basename),
@@ -87,34 +85,28 @@ bool LogFile::rollFile() {
 
 std::string LogFile::getLogFileName(const std::string& basename, time_t* now) {
   std::string filename;
-  filename.reserve(basename.size() + MAX_CHAR_BUFFER * 3);
+  filename.reserve(basename.size() + 124);
   filename = basename;
 
-  char timebuf[MAX_CHAR_BUFFER];
+  char timebuf[32];
   struct tm tm;
   *now = time(NULL);
-  ::gmtime_r(now, &tm); // 日历时间timep转换为用UTC时间表示的时间保存在tm中
-  ::strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
+  gmtime_r(now, &tm); // 日历时间timep转换为用UTC时间表示的时间保存在tm中
+  strftime(timebuf, sizeof timebuf, ".%Y%m%d-%H%M%S.", &tm);
   filename += timebuf;
 
-  char hostname[MAX_CHAR_BUFFER];
-  memset(hostname, 0, MAX_CHAR_BUFFER);
-  int ret = ::gethostname(hostname, MAX_CHAR_BUFFER);
-    if (!ret) {
-        filename += hostname;
-    }
+  char hostname[30];
+  gethostname(hostname, 30);
+  filename += hostname;
 
-  char username[MAX_CHAR_BUFFER];
-  memset(username, 0, MAX_CHAR_BUFFER);
-  struct passwd *pwd = NULL;
+  char username[30];
+  struct passwd *pwd;
   pwd = getpwuid(getuid());
-  if (NULL != pwd) {
-    filename += pwd->pw_name;
-  }
+  filename += pwd->pw_name;
 
-  char pidbuf[MAX_CHAR_BUFFER];
+  char pidbuf[32];
   pid_t pid = getpid();
-  snprintf(pidbuf, sizeof(pidbuf), ".%d", pid);
+  snprintf(pidbuf, sizeof pidbuf, ".%d", pid);
   filename += pidbuf;
 
   filename += ".log";
@@ -122,4 +114,3 @@ std::string LogFile::getLogFileName(const std::string& basename, time_t* now) {
   return filename;
 }
 
-}

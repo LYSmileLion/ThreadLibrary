@@ -3,7 +3,7 @@
 
 #include <LogStream.h>
 
-namespace Log {
+namespace HPCs {
 
 enum LogLevel {
 	TRACE,
@@ -65,6 +65,10 @@ class Logger {
   
 	static void setFlush(FlushFunc);
  private:
+    OutputFunc g_output;
+
+    FlushFunc g_flush;
+
 	void finish();
 	
 	LogStream stream_;
