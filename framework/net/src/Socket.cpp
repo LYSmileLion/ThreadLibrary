@@ -41,9 +41,46 @@ Status TcpIPv4Socket::Listen() {
         return SOCKET_CREATE_FAILED;    
     }   
     int status = ::listen(socket_fd_, SOMAXCONN);
+    if (status < 0) {
+        std::cout << "listen failed : " << errno << "." << std::endl;
+        return SOCK_LISTEN_FAILED;    
+    }
+    return SUCCESS;
 }
 
-    Status Accept(int *accept_fd);
+Status TcpIPv4Socket::Accept(int *accept_fd, InetAdressIPV4 *address) {
+    if (NULL == accept_fd) {
+        std::cout << "param error." << std::endl;
+        return PARAM_ERROR;
+    }
+    if (NULL == address) {
+        std::cout << "param error." << std::endl;
+        return PARAM_ERROR;
+    }
+    sockaddr_in addr;
+    int connfd = ::accept(
+        socket_fd_, 
+        static_cast<sockaddr *>(&addr), 
+        sizeof(addr));
+    if (connfd < 0) {
+        errno_ = errno;
+        switch (errno_) {
+            case EAGAIN:    
+            case EAGAIN:
+            case ECONNABORTED:
+            case EINTR:
+            case EPROTO: // ???
+            case EPERM:
+            case EMFILE: // per-process lmit of open file desctiptor ???
+              // expected errors
+              errno = savedErrno;
+              break;
+        }
+    }
+
+
+    
+}
 
     Status Close();
 
