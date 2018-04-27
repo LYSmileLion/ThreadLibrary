@@ -1,7 +1,7 @@
 #ifndef FRAMEWORK_NET_INCLUDE_SOCKET_HPP_
 #define FRAMEWORK_NET_INCLUDE_SOCKET_HPP_
 
-#include <InetAdress.hpp>
+#include <InetAddress.hpp>
 
 namespace Net {
 //this calss create socket for tcp ipv4,and the socket is noblock
@@ -13,7 +13,7 @@ class TcpIPv4Socket : Base::nocopyable {
 
     ~TcpIPv4Socket();
 
-    Status BindAddress(const InetAdressIPV4& adress);
+    Status BindAddress(const InetAddressIPV4& address);
 
     Status Listen();
 
@@ -23,23 +23,21 @@ class TcpIPv4Socket : Base::nocopyable {
 
     Status ShutDownWrite();
 
-    Status Read(void *buf, size_t count);
+    Status Connect(const InetAddressIPV4 &address);
 
-    Status Write(void *buf, size_t count);
+    ssize_t Read(void *buf, size_t count);
 
-    Status GetLocalAdress(InetAdressIPV4 *adress);
+    ssize_t Write(void *buf, size_t count);
 
-    Status GetPeerAdress(InetAdressIPV4 *adress);
+    Status GetLocalAdress(InetAddressIPV4 *adress);
+
+    Status GetPeerAdress(InetAddressIPV4 *adress);
 
     int GetErrorCode() const;
 
  private:
-    int errno_;
-
     int socket_fd_;
 };
-
-Status IsSelfConnect(const TcpIPv4Socket &socket1, const TcpIPv4Socket &soket2);
 
 }
 

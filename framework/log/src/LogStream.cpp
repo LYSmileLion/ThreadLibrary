@@ -4,13 +4,12 @@
 
 #include <iostream>
 
-using namespace HPCs;
+namespace Log {
 
 template<typename T>
 void LogStream::formatInteger(T v) {
   if (buffer_.getLeftBufferSize() >= kMaxNumericSize) {
     size_t len = convert(buffer_.getCurrentPtr(), v);
-    std::cout << "len " << len << std::endl;
     buffer_.addCurrentPtr(len);
   }
 }
@@ -141,3 +140,4 @@ template Fmt::Fmt(const char* fmt, long long);
 template Fmt::Fmt(const char* fmt, unsigned long long);
 
 template Fmt::Fmt(const char* fmt, float);*/
+}

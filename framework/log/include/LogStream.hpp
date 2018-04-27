@@ -1,5 +1,5 @@
-#ifndef INCLUDE_LOGSTREAM_HPP_
-#define INCLUDE_LOGSTREAM_HPP_
+#ifndef FRAMEWORK_INCLUDE_LOGSTREAM_HPP_
+#define FRAMEWORK_INCLUDE_LOGSTREAM_HPP_
 
 #include <assert.h>
 #include <string>
@@ -9,9 +9,9 @@
 #include <nocopyable.hpp>
 #include <FixBuffer.hpp>
 
-namespace HPCs {
+namespace Log {
 
-class LogStream : public nocopyable {
+class LogStream : public Base::nocopyable {
 
  public:
     typedef LogStream self;
@@ -19,7 +19,7 @@ class LogStream : public nocopyable {
     typedef FixedBuffer<kSmallBuffer> Buffer;
 
     self& operator<< (bool v) {
-      buffer_.append(v ? "1" : "0", 1);
+      buffer_.append(v ? "true " : "false", 5);
       return *this;
     }
 

@@ -22,8 +22,8 @@ endif()
 if(TARGET_OS STREQUAL "Linux")
     if(TARGET_ARCH STREQUAL "x86_64")
         set(CMAKE_SYSTEM_RPOCESSOR x86_64)
-        set(CMAKE_C_COMPILER    ${TOOLCHAIN_ROOT}/g++)
-        set(CMAKE_CXX_COMPILER  ${TOOLCHAIN_ROOT}/gcc)
+        set(CMAKE_C_COMPILER    ${TOOLCHAIN_ROOT}/gcc)
+        set(CMAKE_CXX_COMPILER  ${TOOLCHAIN_ROOT}/g++)
     else()
         message(FATAL_ERROR "The specified target:${TARGET_OS}-${TARGET_ARCH} is not supported")
     endif()
@@ -56,28 +56,8 @@ get_modules_informatrion(log)
 get_modules_informatrion(thread)
 get_modules_informatrion(net)
 
-add_library(${TARGET_OS}_${TARGET_ARCH}_Thread SHARED 
+add_library(${TARGET_OS}_${TARGET_ARCH}_Framework SHARED 
     ${BASE_SRC_LIST}
-    ${THREAD_SRC_LIST})
-
-#if(BUILD_SAMPLES)
-#	add_executable(file_utils_est ${PROJECT_SOURCE_DIR}/sample/FileTest.cpp)
-#	target_link_libraries(file_utils_est ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#    add_executable(thread_test ${PROJECT_SOURCE_DIR}/sample/ThreadTest.cpp)
-#	target_link_libraries(thread_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#	add_executable(mutex_test ${PROJECT_SOURCE_DIR}/sample/MutexTest.cpp)
-#	target_link_libraries(mutex_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#	add_executable(logfile_test ${PROJECT_SOURCE_DIR}/sample/LogFileTest.cpp)
-#	target_link_libraries(logfile_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#	add_executable(utils_test ${PROJECT_SOURCE_DIR}/sample/UtilsTest.cpp)
-#	target_link_libraries(utils_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#	add_executable(LogStream_test ${PROJECT_SOURCE_DIR}/sample/LogStreamTest.cpp)
-#	target_link_libraries(LogStream_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#	add_executable(Condition_test ${PROJECT_SOURCE_DIR}/sample/ConditionTest.cpp)
-#	target_link_libraries(Condition_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#	add_executable(ThreadPool_test ${PROJECT_SOURCE_DIR}/sample/ThreadPoolTest.cpp)
-#	target_link_libraries(ThreadPool_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#	#   add_executable(thread_pool_test ${PROJECT_SOURCE_DIR}/sample/ThreadPoolTest.cpp)
-#	#target_link_libraries(thread_pool_test ${TARGET_OS}_${TARGET_ARCH}_Thread ${DEPS_LIBS})
-#endif()
-#
+    ${THREAD_SRC_LIST}
+    ${LOG_SRC_LIST}
+    ${NET_SRC_LIST})

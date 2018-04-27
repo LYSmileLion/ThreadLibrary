@@ -1,0 +1,7 @@
+function(get_modules_samples module)
+    string(TOUPPER ${module} module_name_upper)
+    string(TOLOWER ${module} module_name_lower)
+    include_directories(${PROJECT_SOURCE_DIR}/../framework/${module_name_lower}/include)
+    file(GLOB_RECURSE src_files ${PROJECT_SOURCE_DIR}/${module_name_lower}/*.cpp)
+    set(${module_name_upper}_SRC ${src_files} PARENT_SCOPE)
+endfunction()

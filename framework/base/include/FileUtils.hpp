@@ -13,53 +13,56 @@ namespace Base {
 
 class ReadFile : public nocopyable {
  public:
-	explicit ReadFile(const std::string &filename);
+    explicit ReadFile(const std::string &filename);
 
-	~ReadFile();
+    ~ReadFile();
 
-	Status readToString(
-		uint64_t readsize,
-		int64_t *modifytime,
-		int64_t *createtime,
-		std::string *context);
+    Status readToString(
+        uint64_t readsize,
+        int64_t *modifytime,
+        int64_t *createtime,
+        std::string *context);
 
-	Status readToByte(
-		char *buffer, 
-		uint64_t buffersize,
-		int64_t *modifytime,
-		int64_t *createtime);
+    Status readToByte(
+        char *buffer, 
+        uint64_t buffersize,
+        int64_t *modifytime,
+        int64_t *createtime);
 
-	Status getFileSize(uint64_t *filesize);
+    Status getFileSize(uint64_t *filesize);
 
     int getSystemErrno() {
         return errno_;
     }
 
-	const char *buffer();
+    const char *buffer();
  private:
-	int fd_;
-	int errno_;
+    int fd_;
+
+    int errno_;
+
 };
 
 class WriteFile : public nocopyable {
  public:
-	explicit WriteFile(const std::string &file_name);
+    explicit WriteFile(const std::string &file_name);
 
-	~WriteFile();
-	
-    Status fflush();
+    ~WriteFile();
 
-	Status append(const char* context, const uint64_t len);
+    Status flush();
 
-	int getSystemError() const;
+    Status append(const char* context, const uint64_t len);
 
-	uint64_t getWritenBytes() const;
-	 
+    int getSystemError() const;
 
+    uint64_t getWritenBytes() const;
  private:
-	int errno_;
-	int writen_bytes_;
-	FILE *fp_;
+    FILE *fp_;
+
+    int errno_;
+
+    int writen_bytes_;
+
 };
 }
 

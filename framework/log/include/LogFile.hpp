@@ -6,12 +6,13 @@
 
 #include <FileUtils.hpp>
 #include <MutexLock.hpp>
+#include <nocopyable.hpp>
 
-namespace HPCs {
+namespace Log {
 
 class WriteFile;
 
-class LogFile : public nocopyable{
+class LogFile : public Base::nocopyable{
  public:
     LogFile(
         const std::string& basename,
@@ -42,7 +43,7 @@ class LogFile : public nocopyable{
 
     int count_;
 
-    std::unique_ptr<HPCs::MutexLock> mutex_;
+    std::unique_ptr<Threads::MutexLock> mutex_;
 
     time_t startOfPeriod_;
 
@@ -50,10 +51,9 @@ class LogFile : public nocopyable{
 
     time_t lastFlush_;
 
-    std::unique_ptr<HPCs::WriteFile> file_;
+    std::unique_ptr<Base::WriteFile> file_;
 
     const static int kRollPerSeconds_ = 60 * 60 * 24;
-
 };
 }
 

@@ -42,26 +42,27 @@ class ThreadPool {
     bool isTaskQueueFull() const;
 
     void runInThread();
-	
-	Task take(); 
 
+    Task take();
+
+ private:
     mutable MutexLock mutex_;
 
     Condition notEmpty_;
 
     Condition notFull_;
 
+    std::string name_;
+
+    unsigned int max_queue_size_;
+
+    bool running_;
+
     Task threadInitCallback_;
 
     std::vector<std::shared_ptr<Thread>> threads_;
 
     std::deque<Task> queue_;
-
-    bool running_;
-
-    int max_queue_size_;
-
-	std::string name_;
  };
 }
 #endif

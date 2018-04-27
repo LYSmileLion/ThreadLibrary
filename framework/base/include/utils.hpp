@@ -1,5 +1,5 @@
-#ifndef INCLUDE_UTILS_HPP_
-#define INCLUDE_UTILS_HPP_
+#ifndef FRAMEWORK_INCLUDE_UTILS_HPP_
+#define FRAMEWORK_INCLUDE_UTILS_HPP_
 
 #include <assert.h>
 #include <stdint.h>
