@@ -1,17 +1,20 @@
-#ifndef _INCLUDE_LOGGING_HPP_
-#define _INCLUDE_LOGGING_HPP_
+#ifndef FRAMEWORK_INCLUDE_LOGGING_HPP_
+#define FRAMEWORK_INCLUDE_LOGGING_HPP_
+
+#include <functional>
 
 #include <LogStream.h>
 
-namespace HPCs {
+namespace Log {
 
 enum LogLevel {
-	TRACE,
-	DEBUG,INFO,
-	WARN,
-	ERROR,
-	FATAL,
-	NUM_LOG_LEVELS,
+    TRACE           = 0,
+    DEBUG           = 1,
+    INFO            = 2,
+    WARN            = 3,
+    ERROR           = 4,
+    FATAL           = 5,
+    NUM_LOG_LEVELS  = 6,
 };
 
 class SourceFile {
@@ -41,9 +44,9 @@ class SourceFile {
 
 class Logger {
  public:
-	typedef void (*OutputFunc)(const char* msg, int len);
-  
-	typedef void (*FlushFunc)();
+    typedef std::function<void(const char*, int)> OutputFunc;
+
+    typedef std::function<void()> FlushFunc;
 	
 	Logger(SourceFile file, int line);
 
@@ -65,8 +68,14 @@ class Logger {
   
 	static void setFlush(FlushFunc);
  private:
-	void finish();
-	
+    bool FormatTime();
+
+    void finish();
+    
+    OutputFunc output_func_;
+
+    FlushFunc flush_func_;
+
 	LogStream stream_;
   
 	LogLevel level_;
