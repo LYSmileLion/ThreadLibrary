@@ -18,7 +18,9 @@ TcpIPv4Socket::TcpIPv4Socket() {
     }
 }
 
-TcpIPv4Socket::~TcpIPv4Socket() {}
+TcpIPv4Socket::~TcpIPv4Socket() {
+    Close();
+}
 
 Status TcpIPv4Socket::BindAddress(const InetAddressIPV4& address) {
     sockaddr_in socket_address = address.GetSocketAddr();

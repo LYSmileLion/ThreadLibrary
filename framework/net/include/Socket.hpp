@@ -13,13 +13,13 @@ class TcpIPv4Socket : Base::nocopyable {
 
     ~TcpIPv4Socket();
 
+    int GetSocketFd() const { return socket_fd_; }
+
     Status BindAddress(const InetAddressIPV4& address);
 
     Status Listen();
 
     Status Accept(int *accept_fd);
-
-    Status Close();
 
     Status ShutDownWrite();
 
@@ -35,6 +35,9 @@ class TcpIPv4Socket : Base::nocopyable {
 
     int GetErrorCode() const;
 
+ private:
+    Status Close();
+ 
  private:
     int socket_fd_;
 };
