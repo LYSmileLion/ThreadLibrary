@@ -1,7 +1,10 @@
 #ifndef FRAMEWORK_NET_INCLUDE_EVENTLOOP_HPP_
 #define FRAMEWORK_NET_INCLUDE_EVENTLOOP_HPP_
 
+#include <atomic>
+
 #include <nocopyable.hpp>
+#include <MutexLock.hpp>
 
 namespace Net {
 
@@ -19,11 +22,13 @@ class EventLoop : Base::nocopyable {
     void Loop();
 
     void Quit();
-
+    //thread safe
     void RunInLoop(Task task);
 
+    //thread safe
     void QueueInLoop(Task task);
 
+    //thread safe
     int QueueSize();
 
     // channel about
@@ -33,12 +38,16 @@ class EventLoop : Base::nocopyable {
 
     bool HasChannel(Channel *channel);
 
-    void PrintActiveChannels();
+    static EventLoop *GetCurrentThreadEventLoop();
 
  private:
     void WakeUP();
 
     void HandleRead();
+
+    void DoPendingTask();
+
+    void PrintActiveChannels();
 
  private:
     typedef std::vector<Channel *> ChannelList;
@@ -47,11 +56,21 @@ class EventLoop : Base::nocopyable {
 
     int wakeup_fd_;
 
+    bool doing_task_;
+
+    std::atomic<bool> loop_;
+
+    std::atomic<bool> quit_;
+
     std::unique_ptr<Channel> wakeup_channel_;
 
     ChannelList active_channels_;
 
     Channel *current_active_channel_;
+
+    Base::MutexLock task_mutex_;
+
+    std::vector<Task> task_;
 };
 
 }
