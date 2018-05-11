@@ -34,12 +34,14 @@ class EventLoop : Base::nocopyable {
 
     bool HasChannel(Channel *channel);
 
-    void PrintActiveChannels();
-
  private:
     void WakeUP();
 
     void HandleRead();
+
+    void DoPendingTask();
+
+    void PrintActiveChannels();
 
  private:
     typedef std::vector<Channel *> ChannelList;
