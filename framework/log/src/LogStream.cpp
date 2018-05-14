@@ -101,7 +101,7 @@ LogStream& LogStream::operator<<(const unsigned char* str) {
     return operator<<(reinterpret_cast<const char*>(str));
 }
 
-LogStream& LogStream::operator<<(const std::string& v) {
+LogStream& LogStream::operator<<(const std::string v) {
     buffer_.append(v.c_str(), v.size());
     return *this;
 }

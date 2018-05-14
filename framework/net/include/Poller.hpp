@@ -1,6 +1,9 @@
 #ifndef FRAMEWORK_NET_INCLUDE_POLL_HPP_
 #define FRAMEWORK_NET_INCLUDE_POLL_HPP_
 
+#include <map>
+#include <vector>
+
 #include <nocopyable.hpp>
 #include <Channel.hpp>
 #include <EventLoop.hpp>
@@ -9,6 +12,7 @@ namespace Net {
 
 class Poller : Base::nocopyable {
  public:
+    typedef std::vector<Channel *> ChannelList;
 
     Poller(EventLoop* loop);
 
@@ -20,7 +24,7 @@ class Poller : Base::nocopyable {
 
     void RemoveChannel(Channel* channel);
 
-    void HasChannel(Channel *channel)
+    bool HasChannel(Channel *channel);
 
  private:
     typedef std::vector<struct pollfd> PollFdList;

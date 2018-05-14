@@ -2,6 +2,9 @@
 #define FRAMEWORK_NET_INCLUDE_EVENTLOOP_HPP_
 
 #include <atomic>
+#include <functional>
+#include <vector>
+#include <memory>
 
 #include <nocopyable.hpp>
 #include <MutexLock.hpp>
@@ -22,6 +25,9 @@ class EventLoop : Base::nocopyable {
     void Loop();
 
     void Quit();
+
+    bool IsInLoopThread();
+
     //thread safe
     void RunInLoop(Task task);
 
@@ -68,9 +74,11 @@ class EventLoop : Base::nocopyable {
 
     Channel *current_active_channel_;
 
-    Base::MutexLock task_mutex_;
+    Threads::MutexLock task_mutex_;
 
     std::vector<Task> task_;
+
+    int thread_tid_;
 };
 
 }

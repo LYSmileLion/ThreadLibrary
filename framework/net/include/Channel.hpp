@@ -1,13 +1,18 @@
 #ifndef FRAMEWORK_NET_INCLUDE_CHANNEL_HPP_
 #define FRAMEWORK_NET_INCLUDE_CHANNEL_HPP_
 
+#include <poll.h>
+
 #include <functional>
 #include <memory>
+#include <string>
 
 #include <nocopyable.hpp>
 
 namespace Net {
+
 class EventLoop;
+
 class Channel : Base::nocopyable {
  public:
     typedef std::function<void()> EventCallback;
@@ -34,9 +39,22 @@ class Channel : Base::nocopyable {
 
     bool IsWriting() const;
 
+    bool IsNoneEvent() const;
+
+    int GetIntersetEvents() const;
+
     void HandleEvent();
 
+    void SetCurrentEvents(int events);
+    
+    int GetFd() const;
+
+    EventLoop *OwnerLoop() const;
+
+    std::string EventsToString();
     //poll use
+    void RemoveSelfInPoll();
+
     int GetPollIndex();
 
     void SetPollIndex(const int index);
@@ -60,6 +78,8 @@ class Channel : Base::nocopyable {
     int current_event_;
 
     int poll_index_;
+
+    bool added_to_loop_;
 
     EventCallback read_callBack_;
 

@@ -10,9 +10,12 @@ namespace Net {
 TcpIPv4Socket::TcpIPv4Socket(int soket_fd) :
     socket_fd_(soket_fd) {}
 
-TcpIPv4Socket::TcpIPv4Socket() {
-    //socket_fd_ = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
-    socket_fd_ = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
+TcpIPv4Socket::TcpIPv4Socket(bool block) {
+    if (true == block) {
+        socket_fd_ = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
+    } else {
+        socket_fd_ = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, IPPROTO_TCP);
+    }
     if (-1 == socket_fd_) {
         LOG_SYSFATAL << "create socket fd failed.";
     }

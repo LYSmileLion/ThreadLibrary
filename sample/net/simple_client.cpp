@@ -10,15 +10,15 @@ using namespace Net;
 
 int main() {
     InetAddressIPV4 address(9000, std::string("127.0.0.1"));
-    TcpIPv4Socket socket;
+    TcpIPv4Socket socket(true);
     Status status = socket.Connect(address);
     if (SUCCESS != status) {
         LOG_ERROR << "socket listen failed.";
         return -1;
     }
-    char buf[100];
-    socket.Read(static_cast<void *>(buf), sizeof(buf));
-    std::cout << buf << std::endl;
+    char *str = "sdasdasdasdas";
+    socket.Write(static_cast<void *>(str), sizeof(str));
+    while(1);
     return 0;    
 }
 

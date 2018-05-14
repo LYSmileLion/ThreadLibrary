@@ -9,7 +9,7 @@ class TcpIPv4Socket : Base::nocopyable {
  public:
     TcpIPv4Socket(int soket_fd);
 
-    TcpIPv4Socket();
+    TcpIPv4Socket(bool block = false);
 
     ~TcpIPv4Socket();
 

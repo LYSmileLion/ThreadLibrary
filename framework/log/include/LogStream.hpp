@@ -51,7 +51,7 @@ class LogStream : public Base::nocopyable {
 
     self& operator<<(const unsigned char* str);
 
-    self& operator<<(const std::string& v);
+    self& operator<<(const std::string v);
 
     void append(const char* data, int len);
 

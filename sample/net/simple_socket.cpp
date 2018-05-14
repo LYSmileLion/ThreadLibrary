@@ -34,7 +34,6 @@ int main() {
         char  str[] = "create link success^_^.";
         ssize_t write_len = accept_socket.Write(static_cast<void *>(str), sizeof(str));
         LOG_INFO << "write size : " << write_len;
-        accept_socket.Close();
     }
     return 0;    
 }

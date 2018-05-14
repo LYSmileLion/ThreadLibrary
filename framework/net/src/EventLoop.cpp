@@ -1,6 +1,11 @@
+#include <sys/eventfd.h>
+#include <unistd.h>
+
 #include <EventLoop.hpp>
 #include <Logging.hpp>
-#include <Poller.h>
+#include <Poller.hpp>
+#include <Channel.hpp>
+#include <CurrentThread.hpp>
 
 namespace Net {
 
@@ -23,21 +28,27 @@ EventLoop::EventLoop() :
     loop_(false),
     quit_(false),
     wakeup_channel_(new Channel(this, wakeup_fd_)),
-    current_active_channel_(NULL) {
+    current_active_channel_(NULL),
+    thread_tid_(Threads::CurrentThread::getTid()){
     if (t_eventloop_in_thread) {
         LOG_FATAL << "have already created eventloop in current thread.";
     } else {
         LOG_INFO << "Create EventLoop in current thread.";
         t_eventloop_in_thread = this;
     }
-    wakeup_channel_
+    wakeup_channel_->SetReadCallback(std::bind(&EventLoop::HandleRead, this));
+    wakeup_channel_->EnableReading(true);
 }
 
 EventLoop::~EventLoop() {
-    
+    LOG_INFO << "EventLoop end in thread : " << Threads::CurrentThread::getTid();
+    wakeup_channel_->DisableAll();
+    wakeup_channel_->RemoveSelfInPoll();
+    ::close(wakeup_fd_);
+    t_eventloop_in_thread = NULL;
 }
 
-EventLoop::Loop() {
+void EventLoop::Loop() {
     if (!IsInLoopThread()) {
         LOG_FATAL << "loop not in loop thread.";
     }
@@ -48,9 +59,12 @@ EventLoop::Loop() {
     quit_ = false;
     while (!quit_) {
         active_channels_.clear();
-        poller_->poll(active_channels_);
+        poller_->Poll(POLLWAITTIME, &active_channels_);
         for (auto &channel : active_channels_) {
-            channel.HandleEvent();
+            LOG_DEBUG << channel->EventsToString();
+        }
+        for (auto &channel : active_channels_) {
+            channel->HandleEvent();
         }
         DoPendingTask();
     }
@@ -59,7 +73,11 @@ EventLoop::Loop() {
 
 void EventLoop::Quit() {
     quit_ = true;
-    WakeUP()
+    WakeUP();
+}
+
+bool EventLoop::IsInLoopThread() {
+    return (thread_tid_ == Threads::CurrentThread::getTid());
 }
 
 void EventLoop::RunInLoop(Task task) {
@@ -72,7 +90,7 @@ void EventLoop::RunInLoop(Task task) {
 
 void EventLoop::QueueInLoop(Task task) {
     {
-        Base::MutexLockGuard lock(task_mutex_);
+        Threads::MutexLockGuard lock(task_mutex_);
         task_.push_back(std::move(task));
     }
     if (!IsInLoopThread() || doing_task_) {
@@ -81,7 +99,7 @@ void EventLoop::QueueInLoop(Task task) {
 }
 
 int EventLoop::QueueSize() {
-    Base::MutexLockGuard lock(task_mutex_);
+    Threads::MutexLockGuard lock(task_mutex_);
     return static_cast<int>(task_.size());
 }
 
@@ -121,7 +139,7 @@ bool EventLoop::HasChannel(Channel *channel) {
     if (false == IsInLoopThread()) {
         LOG_FATAL << "can't update channel in other thread.";
     }
-    poller_->HasChannel(channel);
+    return poller_->HasChannel(channel);
 }
 
 void EventLoop::WakeUP() {
@@ -134,9 +152,9 @@ void EventLoop::WakeUP() {
 
 void EventLoop::HandleRead() {
     uint64_t one = 1;
-    ssize_t count = ::read(wakeupFd_, &one, sizeof(one));
+    ssize_t count = ::read(wakeup_fd_, &one, sizeof(one));
     if (count != sizeof(one)) {
-        LOG_ERR << "EventLoop::HandleRead() reads " << count << " bytes instead of 8";
+        LOG_ERROR << "EventLoop::HandleRead() reads " << count << " bytes instead of 8";
     }
 }
 
@@ -144,7 +162,7 @@ void EventLoop::DoPendingTask() {
     std::vector<Task> task;
     doing_task_ = true;
     {
-        Base::MutexLockGuard lock(task_mutex_);
+        Threads::MutexLockGuard lock(task_mutex_);
         task.swap(task_);
     }
     for (size_t i = 0; i < task.size(); i++) {
@@ -155,9 +173,8 @@ void EventLoop::DoPendingTask() {
 
 void EventLoop::PrintActiveChannels() {
     for (const auto& channel : active_channels_) {
-        LOG_INFO << "{" << channel->reventsToString() << "} ";    
-    }    
-    
+        LOG_INFO << "{" << channel->EventsToString() << "} ";    
+    }
 }
 
 EventLoop *GetCurrentThreadEventLoop() {
