@@ -13,6 +13,12 @@ class TcpIPv4Socket : Base::nocopyable {
 
     ~TcpIPv4Socket();
 
+    void SetKeepAlive(bool status);
+
+    void SetReuseAddr(bool on);
+
+    void SetTcpNoDelay(bool on);
+
     int GetSocketFd() const { return socket_fd_; }
 
     Status BindAddress(const InetAddressIPV4& address);
@@ -27,7 +33,7 @@ class TcpIPv4Socket : Base::nocopyable {
 
     ssize_t Read(void *buf, size_t count);
 
-    ssize_t Write(void *buf, size_t count);
+    ssize_t Write(const void *buf, size_t count);
 
     Status GetLocalAdress(InetAddressIPV4 *adress);
 

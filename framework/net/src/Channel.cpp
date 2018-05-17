@@ -24,11 +24,11 @@ void Channel::SetWriteCallback(EventCallback cb) {
     write_callBack_ = std::move(cb);
 }
 
-void Channel::setCloseCallback(EventCallback cb) {
+void Channel::SetCloseCallback(EventCallback cb) {
     close_callBack_ = std::move(cb);
 }
 
-void Channel::setErrorCallback(EventCallback cb) {
+void Channel::SetErrorCallback(EventCallback cb) {
     error_callBack_ = std::move(cb);
 }
 

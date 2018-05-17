@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <netinet/tcp.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -23,6 +24,36 @@ TcpIPv4Socket::TcpIPv4Socket(bool block) {
 
 TcpIPv4Socket::~TcpIPv4Socket() {
     Close();
+}
+
+void TcpIPv4Socket::SetKeepAlive(bool status) {
+    int optval = status ? 1 : 0;
+    ::setsockopt(
+        socket_fd_,
+        SOL_SOCKET,
+        SO_KEEPALIVE,
+        &optval, 
+        static_cast<socklen_t>(sizeof optval));
+}
+
+void TcpIPv4Socket::SetReuseAddr(bool on) {
+    int optval = on ? 1 : 0;
+    ::setsockopt(
+        socket_fd_, 
+        SOL_SOCKET,
+        SO_REUSEADDR,
+        &optval,
+        static_cast<socklen_t>(sizeof optval));
+}
+
+void TcpIPv4Socket::SetTcpNoDelay(bool on) {
+    int optval = on ? 1 : 0;
+    ::setsockopt(
+        socket_fd_,
+        IPPROTO_TCP,
+        TCP_NODELAY,
+        &optval,
+        static_cast<socklen_t>(sizeof optval));
 }
 
 Status TcpIPv4Socket::BindAddress(const InetAddressIPV4& address) {
@@ -110,7 +141,7 @@ ssize_t TcpIPv4Socket::Read(void *buf, size_t count) {
     return ::read(socket_fd_, buf, count);
 }
 
-ssize_t TcpIPv4Socket::Write(void *buf, size_t count) {
+ssize_t TcpIPv4Socket::Write(const void *buf, size_t count) {
     return ::write(socket_fd_, buf, count);
 }
 
@@ -152,6 +183,16 @@ Status TcpIPv4Socket::GetPeerAdress(InetAddressIPV4 *adress) {
     }
     *adress = InetAddressIPV4(localaddr);
     return SUCCESS;
+}
+
+int TcpIPv4Socket::GetErrorCode() const {
+    int optval;
+    socklen_t optlen = static_cast<socklen_t>(sizeof optval);
+    if (::getsockopt(socket_fd_, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0) {
+        return errno;
+    } else {
+        return optval;    
+    }
 }
 
 }

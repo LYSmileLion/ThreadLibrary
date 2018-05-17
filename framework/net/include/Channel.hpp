@@ -25,9 +25,9 @@ class Channel : Base::nocopyable {
 
     void SetWriteCallback(EventCallback cb);
 
-    void setCloseCallback(EventCallback cb);
+    void SetCloseCallback(EventCallback cb);
 
-    void setErrorCallback(EventCallback cb);
+    void SetErrorCallback(EventCallback cb);
 
     void EnableReading(bool status);
 
