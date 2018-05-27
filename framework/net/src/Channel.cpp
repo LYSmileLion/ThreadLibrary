@@ -35,21 +35,19 @@ void Channel::SetErrorCallback(EventCallback cb) {
 void Channel::EnableReading(bool status) {
     if (true == status) {
         interested_event_ |= READEVENT;
-        UpdatePollList();
     } else {
-        interested_event_ |= (~READEVENT);
-        UpdatePollList();
+        interested_event_ &= (~READEVENT);
     }
+    UpdatePollList();
 }
 
 void Channel::EnableWriting(bool status) {
     if (true == status) {
         interested_event_ |= WRITEEVENT;
-        UpdatePollList();
     } else {
-        interested_event_ |= (~WRITEEVENT);
-        UpdatePollList();
+        interested_event_ &= (~WRITEEVENT);
     }
+    UpdatePollList();
 }
 
 bool Channel::IsReading() const {
@@ -65,7 +63,7 @@ bool Channel::IsNoneEvent() const {
 }
 
 void Channel::DisableAll() {
-    interested_event_ |= NONEEVENT;
+    interested_event_ = NONEEVENT;
     UpdatePollList();
 }
 
@@ -76,24 +74,31 @@ int Channel::GetIntersetEvents() const {
 void Channel::HandleEvent() {
     LOG_INFO << EventsToString();
     if ((current_event_ & POLLHUP) && !(current_event_ & POLLIN)) {
-        if (close_callBack_) { close_callBack_(); }
+        if (close_callBack_) {
+            close_callBack_();
+        }
     }
 
     if (current_event_ & POLLNVAL) {
         LOG_WARN << "fd = " << fd_ << " Channel::handle_event() POLLNVAL";
     }
 
-    if (current_event_ & (POLLERR | POLLNVAL))
-    {
-        if (error_callBack_) error_callBack_();
+    if (current_event_ & (POLLERR | POLLNVAL)) {
+        if (error_callBack_) {
+            error_callBack_();
+        }
     }
 
     if (current_event_ & (POLLIN | POLLPRI | POLLRDHUP)) {
-        if (read_callBack_) read_callBack_();
+        if (read_callBack_) {
+            read_callBack_();
+        }
     }
 
     if (current_event_ & POLLOUT) {
-        if (write_callBack_) write_callBack_();
+        if (write_callBack_) {
+            write_callBack_();
+        }
     }
 }
 
@@ -119,7 +124,7 @@ int Channel::GetPollIndex() {
 }
 
 void Channel::SetPollIndex(int index) {
-    poll_index_ = index;    
+    poll_index_ = index;
 }
 void Channel::UpdatePollList() {
     added_to_loop_ = true;

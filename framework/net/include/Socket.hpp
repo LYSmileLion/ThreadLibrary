@@ -4,7 +4,7 @@
 #include <InetAddress.hpp>
 
 namespace Net {
-//this calss create socket for tcp ipv4,and the socket is noblock
+//this calss create socket for tcp ipv4, and not have socket fd
 class TcpIPv4Socket : Base::nocopyable {
  public:
     TcpIPv4Socket(int soket_fd);
@@ -13,13 +13,13 @@ class TcpIPv4Socket : Base::nocopyable {
 
     ~TcpIPv4Socket();
 
-    void SetKeepAlive(bool status);
+    Status SetKeepAlive(bool status);
 
-    void SetReuseAddr(bool on);
+    Status SetReuseAddr(bool on);
 
-    void SetTcpNoDelay(bool on);
+    Status SetTcpNoDelay(bool on);
 
-    int GetSocketFd() const { return socket_fd_; }
+    int GetFd() const;
 
     Status BindAddress(const InetAddressIPV4& address);
 
@@ -27,23 +27,22 @@ class TcpIPv4Socket : Base::nocopyable {
 
     Status Accept(int *accept_fd);
 
-    Status ShutDownWrite();
-
     Status Connect(const InetAddressIPV4 &address);
 
     ssize_t Read(void *buf, size_t count);
 
     ssize_t Write(const void *buf, size_t count);
 
+    Status ShutDownWrite();
+
+    Status Close();
+
     Status GetLocalAdress(InetAddressIPV4 *adress);
 
     Status GetPeerAdress(InetAddressIPV4 *adress);
 
-    int GetErrorCode() const;
+    Status GetErrorCode(int *value);
 
- private:
-    Status Close();
- 
  private:
     int socket_fd_;
 };

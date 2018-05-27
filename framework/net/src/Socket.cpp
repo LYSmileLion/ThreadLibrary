@@ -22,38 +22,55 @@ TcpIPv4Socket::TcpIPv4Socket(bool block) {
     }
 }
 
-TcpIPv4Socket::~TcpIPv4Socket() {
-    Close();
+TcpIPv4Socket::~TcpIPv4Socket() {}
+
+int TcpIPv4Socket::GetFd() const {
+    return socket_fd_;
 }
 
-void TcpIPv4Socket::SetKeepAlive(bool status) {
+Status TcpIPv4Socket::SetKeepAlive(bool status) {
     int optval = status ? 1 : 0;
-    ::setsockopt(
+    int ret = ::setsockopt(
         socket_fd_,
         SOL_SOCKET,
         SO_KEEPALIVE,
-        &optval, 
+        &optval,
         static_cast<socklen_t>(sizeof optval));
+    if (-1 == ret) {
+        LOG_SYSERR << "set socket opt KEEPALIVE failed.";
+        return SOCKET_SETOPT_FAILED;
+    }
+    return SUCCESS;
 }
 
-void TcpIPv4Socket::SetReuseAddr(bool on) {
-    int optval = on ? 1 : 0;
-    ::setsockopt(
-        socket_fd_, 
+Status TcpIPv4Socket::SetReuseAddr(bool status) {
+    int optval = status ? 1 : 0;
+    int ret = ::setsockopt(
+        socket_fd_,
         SOL_SOCKET,
         SO_REUSEADDR,
         &optval,
         static_cast<socklen_t>(sizeof optval));
+    if (-1 == ret) {
+        LOG_SYSERR << "set socket opt REUSEADDR failed.";
+        return SOCKET_SETOPT_FAILED;
+    }
+    return SUCCESS;
 }
 
-void TcpIPv4Socket::SetTcpNoDelay(bool on) {
-    int optval = on ? 1 : 0;
-    ::setsockopt(
+Status TcpIPv4Socket::SetTcpNoDelay(bool status) {
+    int optval = status ? 1 : 0;
+    int ret = ::setsockopt(
         socket_fd_,
         IPPROTO_TCP,
         TCP_NODELAY,
         &optval,
         static_cast<socklen_t>(sizeof optval));
+    if (-1 == ret) {
+        LOG_SYSERR << "set socket opt NODELAY failed.";
+        return SOCKET_SETOPT_FAILED;
+    }
+    return SUCCESS;
 }
 
 Status TcpIPv4Socket::BindAddress(const InetAddressIPV4& address) {
@@ -185,13 +202,18 @@ Status TcpIPv4Socket::GetPeerAdress(InetAddressIPV4 *adress) {
     return SUCCESS;
 }
 
-int TcpIPv4Socket::GetErrorCode() const {
-    int optval;
+Status TcpIPv4Socket::GetErrorCode(int *value) {
+    if (NULL == value) {
+        LOG_ERROR << "input param is invalid pointer.";
+        return PARAM_ERROR;
+    }
+    int optval = 0;
     socklen_t optlen = static_cast<socklen_t>(sizeof optval);
     if (::getsockopt(socket_fd_, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0) {
-        return errno;
+        return SOCKET_GETOPT_FAILED;
     } else {
-        return optval;    
+        *value = optval;
+        return SUCCESS;
     }
 }
 

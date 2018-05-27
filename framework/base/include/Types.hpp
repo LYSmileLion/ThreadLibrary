@@ -22,6 +22,8 @@ typedef enum {
     SOCKET_CLOSE_FAILED = -22,
     SOCKET_GETLOCAK_NAME_FAILED = -23,
     SOCKET_CONNECT_FAILED = -24,
+    SOCKET_SETOPT_FAILED    = -25,
+    SOCKET_GETOPT_FAILED    = -26,
 
 } Status;
 

@@ -21,7 +21,7 @@ void DefaultConnectionCallback(const TcpConnectionPtr& connection) {
 void DefaultMessageCallback(
     const TcpConnectionPtr&,
     Buffer* buf) {
-    buf->RetrieveAll();
+    LOG_INFO << buf->RetrieveAllAsString();
 }
 
 TcpConnection::TcpConnection(
@@ -31,9 +31,9 @@ TcpConnection::TcpConnection(
     own_loop_(loop),
     name_(name),
     status_(CONNECTIONG),
+    highwater_mark_(64*1024*1024),
     socket_(new TcpIPv4Socket(sockfd)),
     channel_(new Channel(loop, sockfd)),
-    highwater_mark_(64*1024*1024),
     connection_callback_(DefaultConnectionCallback),
     message_callback_(DefaultMessageCallback) {
     channel_->SetReadCallback(
@@ -44,7 +44,6 @@ TcpConnection::TcpConnection(
         std::bind(&TcpConnection::HandleClose, this));
     channel_->SetErrorCallback(
         std::bind(&TcpConnection::HandleError, this));
-    
     LOG_DEBUG << "TcpConnection::ctor[" <<  name_ << "] at " << this
         << " fd=" << sockfd;
     socket_->SetKeepAlive(true);
@@ -55,6 +54,7 @@ TcpConnection::~TcpConnection() {
     LOG_INFO << "TcpConnection::dtor[" <<  name_ << "] at " << this
         << " fd = " << channel_->GetFd()
         << " status = " << StatusToString();
+    socket_->Close();
 }
 
 void TcpConnection::SetConnectionCallback(const ConnectionCallback& cb) {
@@ -70,7 +70,7 @@ void TcpConnection::SetWriteCompleteCallback(const WriteCompleteCallback& cb) {
 }
 
 void TcpConnection::SetCloseCallback(const CloseCallback& cb) {
-    close_callback_ = cb;   
+    close_callback_ = cb;
 }
 
 void TcpConnection::SetHighWaterMarkCallback(
@@ -90,13 +90,13 @@ const std::string TcpConnection::GetName() const {
 
 const InetAddressIPV4 TcpConnection::GetLocalAddress() const {
     InetAddressIPV4 adress(0, "127.0.0.1");
-    Status status = socket_->GetLocalAdress(&adress);
+    socket_->GetLocalAdress(&adress);
     return adress;
 }
 
 const InetAddressIPV4 TcpConnection::GetPeerAddress() const {
     InetAddressIPV4 adress(0, "127.0.0.1");
-    Status status = socket_->GetPeerAdress(&adress);
+    socket_->GetPeerAdress(&adress);
     return adress;
 }
 
@@ -200,7 +200,9 @@ void TcpConnection::ConnectDestroyed() {
     if (CONNECTED == status_) {
         SetConnectStatus(DISCONNECTED);
         channel_->DisableAll();
-        connection_callback_(shared_from_this());
+        if (connection_callback_) {
+            connection_callback_(shared_from_this());
+        }
     }
     channel_->RemoveSelfInPoll();
 }
@@ -212,14 +214,13 @@ void TcpConnection::HandleRead() {
     int savedErrno = 0;
     ssize_t count = input_buffer_.ReadFd(channel_->GetFd(), &savedErrno);
     if (count > 0) {
-        std::cout << "count > 0" << std::endl;
-        message_callback_(shared_from_this(), &input_buffer_);
+        if (message_callback_) {
+            message_callback_(shared_from_this(), &input_buffer_);
+        }
     }
     else if (0 == count) {
-        std::cout << "count = 0" << std::endl;
         HandleClose();
     } else {
-        std::cout << "count < 0" << std::endl;
         LOG_SYSERR << "TcpConnection::handleRead";
         HandleError();
     }
@@ -257,20 +258,28 @@ void TcpConnection::HandleClose() {
     if (!own_loop_->IsInLoopThread()) {
         LOG_FATAL << "not in loop thread which tcp connection belong to.";
     }
-    
+
     ConnectDestroyed();
 
     SetConnectStatus(DISCONNECTED);
     channel_->DisableAll();
 
     TcpConnectionPtr guardThis(shared_from_this());
-    connection_callback_(guardThis);
-    close_callback_(guardThis);
-    std::cout << "ssssssssss" << std::endl;
+    if (connection_callback_) {
+        connection_callback_(guardThis);
+    }
+    if (close_callback_) {
+        close_callback_(guardThis);
+    }
 }
 
 void TcpConnection::HandleError() {
-    int error = socket_->GetErrorCode();
+    int error = 0;
+    Status status = socket_->GetErrorCode(&error);
+    if (SUCCESS != status) {
+        LOG_ERROR << "GetErrorCode failed.";
+        return;
+    }
     LOG_ERROR << "TcpConnection::handleError [" << name_ << "] - SO_ERROR = "
         << error << " " << ::strerror(error);
 }

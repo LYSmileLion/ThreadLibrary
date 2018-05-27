@@ -68,7 +68,7 @@ void EventLoop::Loop() {
         }
         DoPendingTask();
     }
-    loop_ = true;
+    loop_ = false;
 }
 
 void EventLoop::Quit() {

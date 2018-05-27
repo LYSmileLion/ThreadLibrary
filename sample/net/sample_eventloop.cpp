@@ -19,12 +19,12 @@ class TcpServer {
         listen_socket_(listen_socket) {}
 
     void start() {
-        std::shared_ptr<Channel> channel(new Channel(local_loop_, listen_socket_->GetSocketFd()));
+        std::shared_ptr<Channel> channel(new Channel(local_loop_, listen_socket_->GetFd()));
         channel->SetReadCallback(
             std::bind(&TcpServer::HandleNewConnection, this));
         channel->EnableReading(true);
         channel_.insert(
-            std::make_pair(listen_socket_->GetSocketFd(), channel));
+            std::make_pair(listen_socket_->GetFd(), channel));
     }
 
 
@@ -43,7 +43,7 @@ class TcpServer {
         channel_.insert(
             std::make_pair(channel->GetFd(), channel));
         socket_.insert(
-            std::make_pair(socket->GetSocketFd(), socket));
+            std::make_pair(socket->GetFd(), socket));
         channel->SetReadCallback(std::bind(&TcpServer::handleRead, this, channel->GetFd()));
         channel->EnableReading(true);
     }

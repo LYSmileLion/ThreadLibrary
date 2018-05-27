@@ -13,7 +13,7 @@ Acceptor::Acceptor(EventLoop* loop, const InetAddressIPV4 &address) :
     own_loop_(loop),
     address_(address),
     socket_(),
-    channel_(loop, socket_.GetSocketFd()),
+    channel_(loop, socket_.GetFd()),
     idle_fd_(::open("/dev/null", O_RDONLY | O_CLOEXEC)) {}
 
 Acceptor::~Acceptor() {
@@ -48,12 +48,13 @@ void Acceptor::HandleRead() {
             newconnection_callback_(connect_fd);
         } else {
             TcpIPv4Socket socket(connect_fd);
+            socket.Close();
         }
     } else {
         LOG_SYSERR << "in Acceptor::handleRead";
         if (errno == EMFILE) {
             ::close(idle_fd_);
-            idle_fd_ = ::accept(socket_.GetSocketFd(), NULL, NULL);
+            idle_fd_ = ::accept(socket_.GetFd(), NULL, NULL);
             ::close(idle_fd_);
             idle_fd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);
         }
