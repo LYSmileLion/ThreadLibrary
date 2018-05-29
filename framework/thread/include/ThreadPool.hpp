@@ -19,15 +19,13 @@ class ThreadPool {
 
     explicit ThreadPool(const std::string name = std::string("ThreadPool"));
 
-	~ThreadPool();
+    ~ThreadPool();
 
     void setTaskQueueSize(const int max_size);
 
     void setThreadInitCallBack(const Task& task);
 
     void start(const int thread_num);
-
-    void stop();
 
     const std::string name() const;
 
@@ -37,6 +35,8 @@ class ThreadPool {
 
 
  private:
+    void stop();
+
     bool isFull() const;
 
     bool isTaskQueueFull() const;

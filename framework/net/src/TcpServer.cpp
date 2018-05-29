@@ -12,7 +12,8 @@ TcpServer::TcpServer(EventLoop *loop, std::string name, const InetAddressIPV4 ad
     local_loop_(loop),
     next_connect_id_(1),
     started_(false),
-    name_(name) {}
+    name_(name),
+    eventloop_threadpool_(loop) {}
 
 
 void TcpServer::SetConnectionCallback(const ConnectionCallback& cb) {
@@ -29,6 +30,7 @@ void TcpServer::SetWriteCompleteCallback(const WriteCompleteCallback& cb) {
 
 void TcpServer::HandleNewConnection(int sockfd) {
     char buffer[64];
+    EventLoop *event_loop = eventloop_threadpool_.GetNextLoop();
     //TcpIPv4Socket socket(sockfd);
     //InetAddressIPV4 address;
     //Status status = socket.GetPeerAdress(&address);
@@ -38,7 +40,7 @@ void TcpServer::HandleNewConnection(int sockfd) {
     snprintf(buffer, sizeof(buffer), "-%d", next_connect_id_);
     std::string name = name_ + buffer;
     std::shared_ptr<TcpConnection> connect(
-        new TcpConnection(local_loop_, name, sockfd));
+        new TcpConnection(event_loop, name, sockfd));
     connect_.insert(
         std::make_pair(name, connect));
 
@@ -51,13 +53,16 @@ void TcpServer::HandleNewConnection(int sockfd) {
     connect->SetCloseCallback(
         std::bind(&TcpServer::DefaultCloseBack, this, std::placeholders::_1));
 
-    connect->ConnectEstablished();
+    event_loop->RunInLoop(
+        std::bind(&TcpConnection::ConnectEstablished, connect));
 }
 
-void TcpServer::Start() {
-        acceptor_.SetNewConnectionCallback(
-            std::bind(&TcpServer::HandleNewConnection, this, std::placeholders::_1));
-        acceptor_.Start();
+void TcpServer::Start(int thread_num) {
+    eventloop_threadpool_.SetThreadNum(thread_num);
+    eventloop_threadpool_.Start();
+    acceptor_.SetNewConnectionCallback(
+        std::bind(&TcpServer::HandleNewConnection, this, std::placeholders::_1));
+    acceptor_.Start();
 }
 
 void TcpServer::DefaultCloseBack(const TcpConnectionPtr& connect) {

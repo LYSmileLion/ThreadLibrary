@@ -9,6 +9,7 @@
 #include <InetAddress.hpp>
 #include <nocopyable.hpp>
 #include <TcpConnection.hpp>
+#include <EventLoopThreadPool.hpp>
 #include <Acceptor.hpp>
 
 namespace Net {
@@ -17,7 +18,7 @@ class TcpServer : public Base::nocopyable {
  public:
     TcpServer(EventLoop *loop, std::string name, const InetAddressIPV4 address);
 
-    void Start();
+    void Start(int thread_num = 0);
 
     void SetConnectionCallback(const ConnectionCallback& cb);
 
@@ -45,6 +46,8 @@ class TcpServer : public Base::nocopyable {
     std::atomic<bool> started_;
 
     std::string name_;
+
+    EventLoopThreadPool eventloop_threadpool_;
 
     ConnectionCallback connect_callback_;
 
