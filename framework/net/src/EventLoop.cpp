@@ -7,6 +7,8 @@
 #include <Channel.hpp>
 #include <CurrentThread.hpp>
 
+#include <iostream>
+
 namespace Net {
 
 __thread EventLoop* t_eventloop_in_thread = NULL;
@@ -61,7 +63,9 @@ void EventLoop::Loop() {
         active_channels_.clear();
         poller_->Poll(POLLWAITTIME, &active_channels_);
         for (auto &channel : active_channels_) {
-            LOG_DEBUG << channel->EventsToString();
+            std::cout << "=====================" << std::endl;
+            LOG_INFO << channel->EventsToString();
+            std::cout << "+++++++++++++++++++++" << std::endl;
         }
         for (auto &channel : active_channels_) {
             channel->HandleEvent();

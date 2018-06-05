@@ -27,7 +27,7 @@ void DefaultMessageCallback(
 TcpConnection::TcpConnection(
     EventLoop* loop,
     const std::string name,
-    int sockfd) : 
+    int sockfd) :
     own_loop_(loop),
     name_(name),
     status_(CONNECTIONG),

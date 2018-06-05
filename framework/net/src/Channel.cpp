@@ -72,7 +72,6 @@ int Channel::GetIntersetEvents() const {
 }
 
 void Channel::HandleEvent() {
-    LOG_INFO << EventsToString();
     if ((current_event_ & POLLHUP) && !(current_event_ & POLLIN)) {
         if (close_callBack_) {
             close_callBack_();

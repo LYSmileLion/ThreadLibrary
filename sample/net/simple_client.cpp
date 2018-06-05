@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 
+#include<unistd.h>
+
 using namespace Net;
 
 int main() {
@@ -18,6 +20,8 @@ int main() {
     }
     char *str = "sdasdasdasdas";
     socket.Write(static_cast<void *>(str), sizeof(str));
+    sleep(20);
+    socket.ShutDownWrite();
     while(1);
     return 0;    
 }
