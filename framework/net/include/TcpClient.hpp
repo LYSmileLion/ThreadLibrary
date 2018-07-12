@@ -22,8 +22,8 @@ class TcpClient :
  public:
     TcpClient(
         EventLoop* loop,
-        const InetAddressIPV4 server,
-        const std::string name);
+        const std::string name,
+        const InetAddressIPV4 server);
 
     ~TcpClient();
 
@@ -74,8 +74,8 @@ class TcpClient :
     int next_connect_id_;
     
     Threads::MutexLock mutex_;
-    
-    TcpConnectionPtr connection_; // @GuardedBy mutex_
+   
+    TcpConnectionPtr connection_;
 };
 
 }

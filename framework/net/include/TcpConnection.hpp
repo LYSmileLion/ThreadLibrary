@@ -25,6 +25,9 @@ typedef std::function<void (const TcpConnectionPtr&)> WriteCompleteCallback;
 typedef std::function<void (const TcpConnectionPtr&, size_t)> HighWaterMarkCallback;
 typedef std::function<void (const TcpConnectionPtr&, Buffer*)> MessageCallback;
 
+void DefaultConnectionCallback(const TcpConnectionPtr& connection);
+void DefaultMessageCallback(const TcpConnectionPtr& conn, Buffer* buf);
+
 class TcpConnection : public Base::nocopyable,
                       public std::enable_shared_from_this<TcpConnection> {
  public:
