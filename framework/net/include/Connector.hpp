@@ -31,7 +31,7 @@ class Connector :
 
     void Stop();
 
-    const InetAddressIPV4& ServerAddress() const;
+    const InetAddressIPV4 ServerAddress() const;
 
  private:
     typedef enum ConnectStatus {

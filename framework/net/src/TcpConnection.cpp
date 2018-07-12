@@ -293,11 +293,11 @@ void TcpConnection::SendInLoopA(std::string str) {
 }
 
 void TcpConnection::SendInLoop(const void* message, size_t len) {
-    if (own_loop_->IsInLoopThread()) {
+    if (!own_loop_->IsInLoopThread()) {
         LOG_FATAL << "not in thread which belong to tcpconnection.";
     }
 
-    if (CONNECTED == status_) {
+    if (DISCONNECTED == status_) {
         LOG_ERROR << "tcp connection have connected, give up writing.";
         return;
     }

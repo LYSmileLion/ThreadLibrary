@@ -21,6 +21,15 @@ void Connector::Start() {
         std::bind(&Connector::StartInLoop, shared_from_this()));
 }
 
+const InetAddressIPV4 Connector::ServerAddress() const {
+    return server_addr_;   
+}
+
+void Connector::SetNewConnectionCallback(const NewConnectionCallback& callback) {
+    connection_callback_ = callback;
+}
+
+
 void Connector::StartInLoop() {
     if (!local_loop_->IsInLoopThread()) {
         LOG_FATAL << "loop not in loop thread.";
