@@ -55,6 +55,7 @@ get_modules_informatrion(base)
 get_modules_informatrion(log)
 get_modules_informatrion(thread)
 get_modules_informatrion(net)
+get_modules_informatrion(protocol)
 
 add_library(${TARGET_OS}_${TARGET_ARCH}_Framework SHARED 
     ${BASE_SRC_LIST}
